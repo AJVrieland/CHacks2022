@@ -75,7 +75,7 @@ async def on_message(message):
         response = random.choice(brooklyn_99_quotes)
         await message.channel.send(response)
 
-    if message.content == 'wild magic!':
+    if message.content == '!wild magic':
         response = random.choice(wildMagic)
         await message.channel.send(response)
     
