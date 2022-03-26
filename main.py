@@ -89,7 +89,6 @@ async def on_message(message):
     if message.content.find("!wild magic") == 0:
         pulls = message.content.split(" ")[2]
         pulls = int(pulls)
-        print(pulls)
         for i in range(0, pulls):
             response = random.choice(wildMagic)
             await message.channel.send(response)
