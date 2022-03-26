@@ -21,13 +21,9 @@ class potatoBot():
         localFile.close()
         return wildMagic
 
-    
-    #Simulates a roll on the wild magic table and returns the result
-    #Inputs: N/A
-    #Outputs: String
-    def rollWildMagic(self):
-        #Roll a random number, 0 to 9999, and use that to index the list
-        pass
+    #Getter for wildMagic array
+    def getWildMagic(self):
+        return self.wildMagic
 
 
 load_dotenv()
@@ -74,6 +70,9 @@ async def on_message(message):
         ),
     ]
 
+    poap = potatoBot()
+    wildMagic = poap.getWildMagic()
+
     if message.content == '99!':
         print(message.content.find("!roll"))
         response = random.choice(brooklyn_99_quotes)
@@ -83,7 +82,6 @@ async def on_message(message):
         response = message.content.split(" ")[1].split("d")
 
         await message.channel.send(response)
-
     if message.content == '!wild magic':
         response = random.choice(wildMagic)
         await message.channel.send(response)
