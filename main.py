@@ -1,6 +1,6 @@
 # bot.py
 import os
-
+import webbrowser
 import discord
 from dotenv import load_dotenv
 import random
@@ -116,6 +116,7 @@ async def on_message(message):
         response = random.choice(brooklyn_99_quotes)
         await message.channel.send(response)
 
+    # Die roller
     if message.content.find("!roll") == 0:
         response = message.content.split(" ")[1].split("d")
         total, roll_list = poap.get_die_rolls(response[0], response[1])
@@ -128,12 +129,15 @@ async def on_message(message):
             await message.channel.send(tempstr)
         await message.channel.send(total)
 
+    if message.content.find("!map") == 0:
+        message.channel.send("https://watabou.itch.io/medieval-fantasy-city-generator")
 
-        await message.channel.send(response)
+    # Wild Magic
     if message.content.lower() == '!wild magic':
         response = random.choice(wildMagic)
         await message.channel.send(response)
 
+    # Wild Magic
     if message.content.find("!wild magic") == 0:
         pulls = message.content.split(" ")[2]
         pulls = int(pulls)
@@ -141,6 +145,7 @@ async def on_message(message):
             response = random.choice(wildMagic)
             await message.channel.send(response)
 
+    # Initiative tracker
     if message.content.find("!initiative") == 0:
         argv = message.content.split(" ").pop()
         response = poap.processInit(argv)
