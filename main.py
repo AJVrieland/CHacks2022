@@ -82,8 +82,22 @@ async def on_message(message):
         response = message.content.split(" ")[1].split("d")
 
         await message.channel.send(response)
-    if message.content == '!wild magic':
+    if message.content.lower() == '!wild magic':
         response = random.choice(wildMagic)
+        await message.channel.send(response)
+
+    if message.content.find("!wild magic") == 0:
+        pulls = message.content.split(" ")[2]
+        pulls = int(pulls)
+        print(pulls)
+        for i in range(0, pulls):
+            response = random.choice(wildMagic)
+            await message.channel.send(response)
+    
+    if message.content.lower() == "!help":
+        response = "Potato on a Pedestal takes the following commands:\n"
+        response += "!roll XdY: Where X is the number of dice, and Y is the number of faces.\n"
+        response += "!wild magic X: Where X is the number of draws from a 10,000 entry wild magic table. Default is 1 pull.\n"
         await message.channel.send(response)
 
 client.run(TOKEN)
