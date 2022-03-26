@@ -1,7 +1,7 @@
 # bot.py
 from ast import Try
 import os
-
+import webbrowser
 import discord
 from dotenv import load_dotenv
 import random
@@ -168,6 +168,7 @@ async def on_message(message):
             await message.channel.send(tempstr)
         await message.channel.send(total)
 
+
     #Wild magic handler
     if message.content.find("!wild") == 0 and message.content.find("magic"):
         try:
@@ -178,6 +179,36 @@ async def on_message(message):
         for i in range(0, pulls):
             response = random.choice(wildMagic)
             await message.channel.send(response)
+
+    if message.content.find("!map") == 0:
+        message.channel.send("https://watabou.itch.io/medieval-fantasy-city-generator")
+
+    # Wild Magic
+    if message.content.lower() == '!wild magic':
+        response = random.choice(wildMagic)
+        await message.channel.send(response)
+
+    # Wild Magic
+    if message.content.find("!wild magic") == 0:
+        pulls = message.content.split(" ")[2]
+        pulls = int(pulls)
+        for i in range(0, pulls):
+            response = random.choice(wildMagic)
+            await message.channel.send(response)
+
+    # Initiative tracker
+    if message.content.find("!initiative") == 0:
+        argv = message.content.split(" ").pop()
+        response = poap.processInit(argv)
+    
+    if message.content.find("!roll initiative") == 0:
+        #Immediately popping twice should remove the !roll initiative and leave the arguments
+        argv = message.content.split(" ").pop().pop()
+        if len(argv) != 2:
+            response = "Invalid syntax, roll initiative takes 2 arguments: Name and Initiative Modifier"
+        else:
+            response = poap.rollInitiative(argv)
+        await message.channel.send(response)
     
     if message.content.lower() == "!help":
         response = "Potato on a Pedestal takes the following commands:\n"
