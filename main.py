@@ -14,7 +14,7 @@ class potatoBot():
     #Outputs: list
     def readWildMagic(self):
         wildMagic = []
-        file = "./d10,000.txt"
+        file = "./d10,000_table.txt"
         with open(file, "r+") as localFile:
             for line in localFile:
                 wildMagic.append(line)
@@ -62,6 +62,8 @@ async def on_message(message):
         'I\'m the human form of the 💯 emoji.',
         'Bingpot!',
         'Hot damn!',
+        'BONE!',
+        'The Full Bull Pen!!',
         (
             'Cool. Cool cool cool cool cool cool cool, '
             'no doubt no doubt no doubt no doubt.'
@@ -72,16 +74,16 @@ async def on_message(message):
     wildMagic = poap.getWildMagic()
 
     if message.content == '99!':
+        print(message.content.find("!roll"))
         response = random.choice(brooklyn_99_quotes)
         await message.channel.send(response)
 
+    if message.content.find("!roll") == 0:
+        response = message.content.split(" ")[1].split("d")
+
+        await message.channel.send(response)
     if message.content == '!wild magic':
         response = random.choice(wildMagic)
         await message.channel.send(response)
-    
-    if message.content.lower() == "!help":
-        response = "Commands:\n"
-    
-
 
 client.run(TOKEN)
