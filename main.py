@@ -1,7 +1,7 @@
 # bot.py
 from ast import Try
 import os
-import webbrowser
+import xkcd
 import discord
 from dotenv import load_dotenv
 import random
@@ -306,6 +306,20 @@ async def on_message(message):
                 diePool.update({splt[-1]: splt[0:-1]})
         else:
             await message.channel.send(diePool)
+
+    if message.content.find("!xkcd") == 0:
+        comic_str = message.content.split(" ")
+        if len(comic_str) == 1:
+            comic = xkcd.getLatestComic()
+            print(comic)
+            await message.channel.send(comic)
+        elif comic_str[1] == "r":
+            comic = xkcd.Comic(random.randint(1, xkcd.getLatestComicNum()))
+            await message.channel.send(comic.imageLink)
+        else:
+            comic_num = int(comic_str[1])
+            comic = xkcd.Comic(comic_num)
+            await message.channel.send(comic.imageLink)
 
     # Initiative tracker
     if message.content.find("!initiative") == 0:
