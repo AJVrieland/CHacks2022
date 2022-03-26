@@ -75,7 +75,7 @@ class potatoBot():
                 ["Threat"]
             ],
         ]
-      self.healthList = []
+        self.healthList = []
 
     # Reads the d10,000 list of wild magic options from the text file and saves it in a list
     # Inputs: N/A
@@ -181,7 +181,7 @@ class potatoBot():
                     result_array.append(random.choice(self.genesys_die[0]))
                 if key == "y":
                     result_array.append(random.choice(self.genesys_die[1]))
-                if key == "b":
+                if key == "u":
                     result_array.append(random.choice(self.genesys_die[2]))
                 if key == "p":
                     result_array.append(random.choice(self.genesys_die[3]))
