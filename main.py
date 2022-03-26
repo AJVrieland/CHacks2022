@@ -89,6 +89,15 @@ class potatoBot():
         localFile.close()
         return wildMagic
 
+    def readDeck(self):
+        file = "./deckOfManyThings.txt"
+        cards = []
+        with open(file, "r+") as localFile:
+            for line in localFile:
+                cards.append(line)
+        localFile.close()
+        return cards
+
     # Getter for wildMagic array
     def getWildMagic(self):
         return self.wildMagic
@@ -200,6 +209,7 @@ client = discord.Client()
 poap = potatoBot()
 linkDict = {}
 diePool = {}
+deckOfManyThings = poap.readDeck()
 
 @client.event
 async def on_ready():
@@ -214,6 +224,7 @@ async def on_ready():
 
     members = '\n - '.join([member.name for member in guild.members])
     print(f'Guild Members:\n - {members}')
+
 
 @client.event
 async def on_member_join(member):
@@ -359,7 +370,8 @@ async def on_message(message):
         argv = message.content.split(" ").pop()
         response = poap.processInit(argv)
 
-    
+    if message.content.find("!deck") == 0:
+        await message.channel.send(random.choice(deckOfManyThings))
     if message.content.find("!name") == 0:
         await message.channel.send("https://www.fantasynamegenerators.com/")
     
@@ -367,10 +379,10 @@ async def on_message(message):
         response = "Potato on a Pedestal takes the following commands:\n"
         response += "!roll XdY: Where X is the number of dice, and Y is the number of faces.\n"
         response += "!wild magic X: Where X is the number of draws from a 10,000 entry wild magic table. Default is 1 pull.\n"
-        response += "!initiative: With no arguments, this command returns the current initiative order"
+        response += "!initiative: With no arguments, this command returns the current initiative order "
         response += "!initiative <name:score> <name:score> ... where name is a creature's name and score is their total initiative, roll + mod. "
         response += "This command supports an arbitrary amound of <name:score> pairs\n"
-        response += "!initiative clear: This clears the initiative queue"
+        response += "!initiative clear: This clears the initiative queue "
         response += "!roll initiative <name> <modifier>: Given a creature's name and initiative modifier,"
         response += " rolls 1d20 + modifier and adds the creature to the initiative queue\n"
         await message.channel.send(response)
