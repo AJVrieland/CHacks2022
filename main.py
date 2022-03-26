@@ -5,6 +5,27 @@ import discord
 from dotenv import load_dotenv
 import random
 
+class potatoBot():
+    def __init__(self):
+        self.wildMagic = self.readWildMagic()
+
+    #Reads the d10,000 list of wild magic options from the text file and saves it in a list
+    #Inputs: N/A
+    #Outputs: list
+    def readWildMagic(self):
+        wildMagic = []
+        file = "./10,000 table.txt"
+        with open(file, "r+") as localFile:
+            for line in localFile:
+                wildMagic.append(line)
+        localFile.close()
+        return wildMagic
+
+    #Getter for wildMagic array
+    def getWildMagic(self):
+        return self.wildMagic
+
+
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
@@ -49,6 +70,9 @@ async def on_message(message):
         ),
     ]
 
+    poap = potatoBot()
+    wildMagic = poap.getWildMagic()
+
     if message.content == '99!':
         print(message.content.find("!roll"))
         response = random.choice(brooklyn_99_quotes)
@@ -58,6 +82,8 @@ async def on_message(message):
         response = message.content.split(" ")[1].split("d")
 
         await message.channel.send(response)
-
+    if message.content == '!wild magic':
+        response = random.choice(wildMagic)
+        await message.channel.send(response)
 
 client.run(TOKEN)
