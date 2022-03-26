@@ -1,5 +1,5 @@
 # bot.py
-from ast import Try
+from ast import Try, arg
 import os
 import xkcd
 import discord
@@ -74,8 +74,8 @@ class potatoBot():
                 ["Threat"],
                 ["Threat"]
             ],
-
         ]
+      self.healthList = []
 
     # Reads the d10,000 list of wild magic options from the text file and saves it in a list
     # Inputs: N/A
@@ -104,9 +104,7 @@ class potatoBot():
         if len(argv) == 0:
             return self.initiativeOrder
         else:
-            # Clear inititative order for new definition
-            self.initiativeOrder = []
-            # If the first item in argv is "clear", return the blank list
+            #If the first item in argv is "clear", return the blank list
             if(argv[0].lower() == "clear"):
                 return self.initiativeOrder
             # if not, process the rest of the arguments
@@ -125,6 +123,45 @@ class potatoBot():
         self.initiativeOrder.append(initiative)
         self.initiativeOrder.sort(reverse=True, key=self.initSort)
         return self.initiativeOrder
+
+    #Store, modify, and track player health
+    #Input: argv: array. Argv[0] is mode: set, heal, damage, or temp, argv[1] is player name,
+    #argv[2] is a number that is set to, added to, or removed from player total
+    #If no health value is given alongside player, player health is set to 100, and healed or damaged by 5
+    def healthTracker(self, argv):
+        try:
+            mode = argv[0]
+        except:
+            return self.healthList
+        #Remove the mode argument from argv
+        argv.pop(0)
+        #Set the value in argv to be an int instead of a str, unless the mode is mass or clear, as they use different syntax
+        try:
+            argv[1] = int(argv[1])
+        except:
+            pass
+        if( mode == "set"):
+            self.healthList.append(argv)
+        elif( mode == "heal"):
+            for player in self.healthList:
+                if player.count(argv[0]) == 1:
+                    player[1] += int(argv[1])
+        elif( mode == "damage"):
+            for player in self.healthList:
+                if player.count(argv[0]) == 1:
+                    player[1] -= int(argv[1])
+        elif( mode == "mass"):
+            for kvPair in argv:
+                argList = kvPair.split(":")
+                argList[1] = int(argList[1])
+                self.healthList.append(argList)
+        elif( mode =="clear"):
+            self.healthList = []
+        else:
+            return "Mode not found"
+        #Regardless of the mode, the last action is to return the healthList
+        return self.healthList
+
 
     def get_die_rolls(self, num_die, die_size):
         total = 0
@@ -225,6 +262,7 @@ async def on_message(message):
         del argv[0:2]
         if len(argv) != 2:
             response = "Invalid syntax, roll initiative takes 2 arguments: Name and Initiative Modifier"
+            await message.channel.send(response)
         else:
             response = poap.rollInitiative(argv)
             await message.channel.send("Current order:")
@@ -243,6 +281,14 @@ async def on_message(message):
             await message.channel.send(tempstr)
         await message.channel.send(total)
 
+    #Health tracker syntax: !health <mode(set, heal, damage, temp, mass)> <PlayerName> <health value> 
+    #Special use case of !health mass <PlayerName>:<HealthValue> <PlayerName>:<HealthValue> <PlayerName>:<HealthValue>
+    if message.content.find("!health") == 0:
+        #Remove the phrase !health from the argument vector
+        argv = message.content.split(" ")
+        argv.pop(0)
+        response = poap.healthTracker(argv)
+        await message.channel.send(response)
 
     #Wild magic handler
     if message.content.find("!wild") == 0 and message.content.find("magic"):
@@ -252,24 +298,11 @@ async def on_message(message):
         except:
             pulls = 1
         for i in range(0, pulls):
-            response = random.choice(wildMagic)
+            response = random.choice(wildMagic) + str(message.author)
             await message.channel.send(response)
 
     if message.content.find("!map") == 0:
         message.channel.send("https://watabou.itch.io/medieval-fantasy-city-generator")
-
-    # Wild Magic
-    if message.content.lower() == '!wild magic':
-        response = random.choice(wildMagic)
-        await message.channel.send(response)
-
-    # Wild Magic
-    if message.content.find("!wild magic") == 0:
-        pulls = message.content.split(" ")[2]
-        pulls = int(pulls)
-        for i in range(0, pulls):
-            response = random.choice(wildMagic)
-            await message.channel.send(response)
 
     if message.content.find("!link") == 0:
         name_link = message.content.split(" ")
@@ -325,15 +358,10 @@ async def on_message(message):
     if message.content.find("!initiative") == 0:
         argv = message.content.split(" ").pop()
         response = poap.processInit(argv)
+
     
-    if message.content.find("!roll initiative") == 0:
-        #Immediately popping twice should remove the !roll initiative and leave the arguments
-        argv = message.content.split(" ").pop().pop()
-        if len(argv) != 2:
-            response = "Invalid syntax, roll initiative takes 2 arguments: Name and Initiative Modifier"
-        else:
-            response = poap.rollInitiative(argv)
-        await message.channel.send(response)
+    if message.content.find("!name") == 0:
+        await message.channel.send("https://www.fantasynamegenerators.com/")
     
     if message.content.lower() == "!help":
         response = "Potato on a Pedestal takes the following commands:\n"
