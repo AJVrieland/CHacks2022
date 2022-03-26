@@ -42,6 +42,26 @@ class potatoBot():
         #initiative[1] = initiative[1] + <rollFunct(1d20)>
         pass
 
+    def get_die_rolls(self, num_die, die_size):
+        total = 0
+        die_totals = []
+
+        for i in range(int(num_die)):
+            num = random.randint(1, int(die_size))
+            die_totals.append(num)
+            total += num
+        return total, die_totals
+        # if (int(num_die) > 1):
+        #     die_totals.append(total)
+        # print(die_totals)
+        # if len(die_totals) == 1:
+        #     return str(die_totals[0])
+        # else:
+        #     mystr = ""
+        #     for i in range(len(die_totals) - 1):
+        #         mystr += str(die_totals[i]) + " + "
+        #     mystr += str(die_totals[-1])
+        #     return mystr
 
 
 load_dotenv()
@@ -98,6 +118,16 @@ async def on_message(message):
 
     if message.content.find("!roll") == 0:
         response = message.content.split(" ")[1].split("d")
+        total, roll_list = poap.get_die_rolls(response[0], response[1])
+        print(roll_list)
+        if len(roll_list) > 1:
+            tempstr = ""
+            for i in range(len(roll_list) - 1):
+                tempstr += str(roll_list[i]) + " + "
+            tempstr += str(roll_list[-1])
+            await message.channel.send(tempstr)
+        await message.channel.send(total)
+
 
         await message.channel.send(response)
     if message.content.lower() == '!wild magic':
