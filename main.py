@@ -1,7 +1,7 @@
 # bot.py
 from ast import Try, arg
 import os
-import webbrowser
+import xkcd
 import discord
 from dotenv import load_dotenv
 import random
@@ -10,11 +10,76 @@ class potatoBot():
     def __init__(self):
         self.wildMagic = self.readWildMagic()
         self.initiativeOrder = []
-        self.healthList = []
+        self.genesys_die = [
+            [
+                ["Blank"],
+                ["Success"],
+                ["Success"],
+                ["Inspiration"],
+                ["Inspiration"],
+                ["Success", "Inspiration"],
+                ["Inspiration", "Inspiration"]
+            ],
+            [
+                ["Blank"],
+                ["Success"],
+                ["Success"],
+                ["Success", "Success"],
+                ["Success", "Success"],
+                ["Inspiration"],
+                ["Success", "Inspiration"],
+                ["Success", "Inspiration"],
+                ["Success", "Inspiration"],
+                ["Inspiration", "Inspiration"],
+                ["Inspiration", "Inspiration"],
+                ["Triumph"]
+            ],
+            [
+                ["Blank"],
+                ["Blank"],
+                ["Success"],
+                ["Success", "Inspiration"],
+                ["Inspiration", "Inspiration"],
+                ["Inspiration"]
+            ],
+            [
+                ["Blank"],
+                ["Failure"],
+                ["Failure", "Failure"],
+                ["Threat"],
+                ["Threat"],
+                ["Threat"],
+                ["Threat", "Threat"],
+                ["Failure", "Threat"]
+            ],
+            [
+                ["Blank"],
+                ["Failure"],
+                ["Failure"],
+                ["Failure", "Failure"],
+                ["Failure", "Failure"],
+                ["Threat"],
+                ["Threat"],
+                ["Failure", "Threat"],
+                ["Failure", "Threat"],
+                ["Threat", "Threat"],
+                ["Threat", "Threat"],
+                ["Despair"]
+            ],
+            [
+                ["Blank"],
+                ["Blank"],
+                ["Failure"],
+                ["Failure"],
+                ["Threat"],
+                ["Threat"]
+            ],
+        ]
+      self.healthList = []
 
-    #Reads the d10,000 list of wild magic options from the text file and saves it in a list
-    #Inputs: N/A
-    #Outputs: list
+    # Reads the d10,000 list of wild magic options from the text file and saves it in a list
+    # Inputs: N/A
+    # Outputs: list
     def readWildMagic(self):
         wildMagic = []
         file = "./d10,000_table.txt"
@@ -24,34 +89,34 @@ class potatoBot():
         localFile.close()
         return wildMagic
 
-    #Getter for wildMagic array
+    # Getter for wildMagic array
     def getWildMagic(self):
         return self.wildMagic
 
     def initSort(self, index):
         return int(index[1])
 
-    #argv is a vector of variable length, if it's 0, the only thing in the message was !initiative
+    # argv is a vector of variable length, if it's 0, the only thing in the message was !initiative
     def processInit(self, argv):
-        #if argv has a length of 0, it's asking for the current order, else add other arguments to initiativeOrder list
-        #Idea: make intiative order a list of list, where the inner list has creature name and their initiative score, and sort the 
-        #outer list by the initiative score
+        # if argv has a length of 0, it's asking for the current order, else add other arguments to initiativeOrder list
+        # Idea: make intiative order a list of list, where the inner list has creature name and their initiative score, and sort the
+        # outer list by the initiative score
         if len(argv) == 0:
             return self.initiativeOrder
         else:
             #If the first item in argv is "clear", return the blank list
             if(argv[0].lower() == "clear"):
                 return self.initiativeOrder
-            #if not, process the rest of the arguments
+            # if not, process the rest of the arguments
             for arg in argv:
                 splitArgs = arg.split(":")
                 self.initiativeOrder.append(splitArgs)
-            #Sort initiativeOrder and return
+            # Sort initiativeOrder and return
             self.initiativeOrder.sort(reverse=True, key=self.initSort)
             return self.initiativeOrder
 
-    #!roll initiative <name> <modifier> rolls 1d20, adds the modifier, and adds the name-value pair to initiativeOrder list, and sorts
-    #intiative: list, first value is a name, second value is an initiative modifier
+    # !roll initiative <name> <modifier> rolls 1d20, adds the modifier, and adds the name-value pair to initiativeOrder list, and sorts
+    # intiative: list, first value is a name, second value is an initiative modifier
     def rollInitiative(self, initiative):
         total, dieList = self.get_die_rolls(1,20)
         initiative[1] = int(initiative[1]) + total
@@ -107,17 +172,24 @@ class potatoBot():
             die_totals.append(num)
             total += num
         return total, die_totals
-        # if (int(num_die) > 1):
-        #     die_totals.append(total)
-        # print(die_totals)
-        # if len(die_totals) == 1:
-        #     return str(die_totals[0])
-        # else:
-        #     mystr = ""
-        #     for i in range(len(die_totals) - 1):
-        #         mystr += str(die_totals[i]) + " + "
-        #     mystr += str(die_totals[-1])
-        #     return mystr
+
+    def roll_genesys(self):
+        result_array = []
+        for key in diePool:
+            for i in range(int(diePool.get(key))):
+                if key == "g":
+                    result_array.append(random.choice(self.genesys_die[0]))
+                if key == "y":
+                    result_array.append(random.choice(self.genesys_die[1]))
+                if key == "b":
+                    result_array.append(random.choice(self.genesys_die[2]))
+                if key == "p":
+                    result_array.append(random.choice(self.genesys_die[3]))
+                if key == "r":
+                    result_array.append(random.choice(self.genesys_die[4]))
+                if key == "l":
+                    result_array.append(random.choice(self.genesys_die[5]))
+        return result_array
 
 
 load_dotenv()
@@ -126,6 +198,8 @@ GUILD = os.getenv('DISCORD_GUILD')
 
 client = discord.Client()
 poap = potatoBot()
+linkDict = {}
+diePool = {}
 
 @client.event
 async def on_ready():
@@ -228,7 +302,63 @@ async def on_message(message):
             await message.channel.send(response)
 
     if message.content.find("!map") == 0:
-        await message.channel.send("https://watabou.itch.io/medieval-fantasy-city-generator")
+        message.channel.send("https://watabou.itch.io/medieval-fantasy-city-generator")
+
+    if message.content.find("!link") == 0:
+        name_link = message.content.split(" ")
+        linkDict.update({name_link[1]: name_link[2]})
+
+    if message.content.find("!get") == 0:
+        link_name = message.content.split(" ")[1]
+        await message.channel.send(linkDict.get(link_name))
+
+    if message.content.find("!rg") == 0:
+        die_array = poap.roll_genesys()
+        die_string = ""
+        for i in die_array:
+            for j in i:
+                die_string += j
+        die_dict = {
+            "Success": die_string.count("Success"),
+            "Failure": die_string.count("Failure"),
+            "Inspiration": die_string.count("Inspiration"),
+            "Threat": die_string.count("Threat"),
+            "Triumph": die_string.count("Triumph"),
+            "Despair": die_string.count("Despair")
+
+        }
+        await message.channel.send(die_dict)
+        diePool.clear()
+
+    #!dp 3g 1y 3p 2b
+    if message.content.find("!dp") == 0:
+        message_array = message.content.split(" ")
+        if len(message_array) > 1:
+            for i in range(len(message_array) - 1):
+                splt = message_array[i+1]
+                diePool.update({splt[-1]: splt[0:-1]})
+        else:
+            await message.channel.send(diePool)
+
+    if message.content.find("!xkcd") == 0:
+        comic_str = message.content.split(" ")
+        if len(comic_str) == 1:
+            comic = xkcd.getLatestComic()
+            print(comic)
+            await message.channel.send(comic)
+        elif comic_str[1] == "r":
+            comic = xkcd.Comic(random.randint(1, xkcd.getLatestComicNum()))
+            await message.channel.send(comic.imageLink)
+        else:
+            comic_num = int(comic_str[1])
+            comic = xkcd.Comic(comic_num)
+            await message.channel.send(comic.imageLink)
+
+    # Initiative tracker
+    if message.content.find("!initiative") == 0:
+        argv = message.content.split(" ").pop()
+        response = poap.processInit(argv)
+
     
     if message.content.find("!name") == 0:
         await message.channel.send("https://www.fantasynamegenerators.com/")
