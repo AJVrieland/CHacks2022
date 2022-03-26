@@ -14,7 +14,7 @@ class potatoBot():
     #Outputs: list
     def readWildMagic(self):
         wildMagic = []
-        file = ".\\d10,000 table.txt"
+        file = "./d10,000.txt"
         with open(file, "r+") as localFile:
             for line in localFile:
                 wildMagic.append(line)
@@ -78,6 +78,9 @@ async def on_message(message):
     if message.content == '!wild magic':
         response = random.choice(wildMagic)
         await message.channel.send(response)
+    
+    if message.content.lower() == "!help":
+        response = "Commands:\n"
     
 
 
