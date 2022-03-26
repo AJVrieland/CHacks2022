@@ -14,7 +14,7 @@ class potatoBot():
     #Outputs: list
     def readWildMagic(self):
         wildMagic = []
-        file = "./10,000 table.txt"
+        file = "./d10,000_table.txt"
         with open(file, "r+") as localFile:
             for line in localFile:
                 wildMagic.append(line)
