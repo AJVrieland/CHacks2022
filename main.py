@@ -41,6 +41,8 @@ async def on_message(message):
         'I\'m the human form of the 💯 emoji.',
         'Bingpot!',
         'Hot damn!',
+        'BONE!',
+        'The Full Bull Pen!!',
         (
             'Cool. Cool cool cool cool cool cool cool, '
             'no doubt no doubt no doubt no doubt.'
@@ -48,7 +50,13 @@ async def on_message(message):
     ]
 
     if message.content == '99!':
+        print(message.content.find("!roll"))
         response = random.choice(brooklyn_99_quotes)
+        await message.channel.send(response)
+
+    if message.content.find("!roll") == 0:
+        response = message.content.split(" ")[1].split("d")
+
         await message.channel.send(response)
 
 
