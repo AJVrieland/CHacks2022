@@ -81,13 +81,14 @@ class potatoBot():
     # Inputs: N/A
     # Outputs: list
     def readWildMagic(self):
-        wildMagic = []
-        file = "./d10,000_table.txt"
-        with open(file, "r+") as localFile:
-            for line in localFile:
-                wildMagic.append(line)
-        localFile.close()
-        return wildMagic
+        pass
+        # wildMagic = []
+        # file = "./d10,000_table.txt"
+        # with open(file, "r+") as localFile:
+        #     for line in localFile:
+        #         wildMagic.append(line)
+        # localFile.close()
+        # return wildMagic
 
     # Getter for wildMagic array
     def getWildMagic(self):
